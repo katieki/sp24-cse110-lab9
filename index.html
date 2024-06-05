@@ -2,6 +2,14 @@
 <html lang="en">
 
 <head>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "1444b39f0bfd4ac097bf8b9076f6721d"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                        
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,6 +96,14 @@
   </main>
 
   <script>
+    // Custom error for step 4
+    class ValidationError extends Error {
+      constructor(message) {
+      super(message);
+      this.name = "ValidationError";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,13 +111,57 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      // Steps 3 & 4
+      try{
+        let result = eval(`${firstNum} ${operator} ${secondNum}`);
+        if (isNaN(result) || !isFinite(result)) {
+          throw new ValidationError('Illegal operation');
+        }
+        output.innerHTML = result;
+      }
+      catch (err) {
+        if (err instanceof ValidationError) {
+          console.error('Illegal operation', err);
+        }
+        else{
+          console.error('Calculation error', err);
+        }
+      }
+      finally {
+        console.log('Calculation attempted but there was an error i fear');
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
-    // You may move this JS to another file if you wish
+    // Step 2
+    errorBtns[0].addEventListener('click', () => console.log('Console Log Demo'));
+    errorBtns[1].addEventListener('click', () => console.error('Console Error Demo'));
+    errorBtns[2].addEventListener('click', () => console.count('Count Button:'));
+    errorBtns[3].addEventListener('click', () => console.warn('Console Warn Demo'));
+    errorBtns[4].addEventListener('click', () => console.assert(false, 'Console Alert Message'));
+    errorBtns[5].addEventListener('click', () => console.clear('Console was cleared'));
+    errorBtns[6].addEventListener('click', () => console.dir(document.body));
+    errorBtns[7].addEventListener('click', () => console.dirxml(document));
+    errorBtns[8].addEventListener('click', () => console.group('Console Group Demo'));
+    errorBtns[9].addEventListener('click', () => console.groupEnd('Console Group Demo'));
+    function Course(name, num){
+      this.name = name;
+      this.num = num;
+    }
+    const softwareEngineering = new Course('Software Engineering', 110);
+    const programmingLanguage = new Course('Programming Language', 130);
+    const advancedSoftware = new Course('Advanced Software Engineering', 112);
+    errorBtns[10].addEventListener('click', () => console.table([softwareEngineering, programmingLanguage, advancedSoftware]));
+    errorBtns[11].addEventListener('click', () => console.time('Timer Button'));
+    errorBtns[12].addEventListener('click', () => console.timeEnd('Timer Button'));
+    errorBtns[13].addEventListener('click', () => console.trace());
+
+    // Step 5
+    errorBtns[14].addEventListener('click', () => {globalErrorTrigger();});
+    TrackJS.track('Testing TrackJS!');            
+    
   </script>
 </body>
 
